@@ -12,7 +12,7 @@ public class ATM {
     public static final int WITHDRAW = 3;
     public static final int LOGOUT = 4;
     
-    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////// ///////////////////////////////////////////////////////
     //                                                                        //
     // Refer to the Simple ATM tutorial to fill in the details of this class. //
     // You'll need to implement the new features yourself.                    //
