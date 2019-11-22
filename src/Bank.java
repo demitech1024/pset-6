@@ -52,11 +52,11 @@ public class Bank {
      * @return the newly created account
      */
     
-    public BankAccount createAccount(int pin, User user) {
-    	accounts.add(new BankAccount(pin, generateAccountNo(), user));
+    // public BankAccount createAccount(int pin, User user) {
+    // 	accounts.add(new BankAccount(pin, generateAccountNo(), user));
     	
-    	return accounts.get(accounts.size() - 1);
-    }
+    // 	return accounts.get(accounts.size() - 1);
+    // }
     
     /**
      * Logs into an existing account.
@@ -112,6 +112,16 @@ public class Bank {
         }
         
         accounts.set(index, account);
+    }
+
+
+    public int whichAccIndex(long accNo) {
+        int total = 0;
+        for (BankAccount sublist : accounts) {
+            total++;
+        }
+
+        
     }
     
     /**
