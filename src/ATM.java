@@ -108,7 +108,7 @@ public class ATM {
         }
         
         System.out.print("PIN: ");
-        int newPin = in.nextInt();
+        newPin = in.nextInt();
         activeAccount = bank.createAccount(newPin, new User(newFirstName, newLastName));
         bank.update(activeAccount);
         bank.save();
