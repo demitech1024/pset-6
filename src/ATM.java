@@ -88,10 +88,25 @@ public class ATM {
     }
 
     public void newAccount() {
-        System.out.print("\nFirst name: ");
-        String newFirstName = in.next().strip();
-        System.out.print("Last name: ");
-        String newLastName = in.next().strip();
+        boolean valid = false;
+        String newFirstName = "";
+        String newLastName = "";
+        int newPin = 0;
+        while (!valid) {
+            System.out.print("\nFirst name: ");
+            newFirstName = in.next().strip();
+
+            System.out.print("Last name: ");
+            newLastName = in.next().strip();
+
+            if (newFirstName.length() > 20 || newFirstName.length() < 1|| newLastName.length() > 30 || newLastName.length() < 1) {
+                System.out.println("Invalid first or last name. First name must be 1 character to 20 characters, while last name must be 1 character to 30 characters.");
+                valid = false;
+            } else {
+                valid = true;
+            }
+        }
+        
         System.out.print("PIN: ");
         int newPin = in.nextInt();
         activeAccount = bank.createAccount(newPin, new User(newFirstName, newLastName));
