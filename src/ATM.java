@@ -46,13 +46,16 @@ public class ATM {
     }
     
     public void startup() {
+        activeAccount = null;
         System.out.println("Welcome to the AIT ATM!");
         while (true) {
             System.out.print("\nAccount No.: ");
             String temp = in.next();
             if (temp.equals("+")) {
                 newAccount();
-                System.out.printf("\nThank you. Your account number is %d.\nPlease log in to access your newly created account.\n", activeAccount.getAccountNo());
+                if (activeAccount != null) {
+                    System.out.printf("\nThank you. Your account number is %d.\nPlease log in to access your newly created account.\n", activeAccount.getAccountNo());
+                }
             } else {
                 long accountNo = Long.valueOf(temp);
             
@@ -100,15 +103,32 @@ public class ATM {
             newLastName = in.next().strip();
 
             if (newFirstName.length() > 20 || newFirstName.length() < 1|| newLastName.length() > 30 || newLastName.length() < 1) {
-                System.out.println("Invalid first or last name. First name must be 1 character to 20 characters, while last name must be 1 character to 30 characters.");
+                System.out.println("Invalid first or last name. First name must be 1 character to 20 characters, ");
+                System.out.println("while last name must be 1 character to 30 characters. To exit, type -1 for first and/or last name fields.");
+                valid = false;
+            } else if (newFirstName.equals("-1") || newLastName.equals("-1")) {
+                System.out.println("\nExiting creation of new account...");
+                return;
+            } else {
+                valid = true;
+            }
+        }
+        
+        valid = false;
+        while (!valid) {
+            System.out.print("PIN: ");
+            newPin = in.nextInt();
+            if (newPin == -1) {
+                return;
+            } else if (newPin > 9999 || newPin < 1000) {
+                System.out.println("Invalid pin selected. Pin number must be no smaller (numerically) than 1000, and no greater than 9999.");
+                System.out.println("If you would like to exit account creation, just type -1 for your pin selection.");
                 valid = false;
             } else {
                 valid = true;
             }
         }
         
-        System.out.print("PIN: ");
-        newPin = in.nextInt();
         activeAccount = bank.createAccount(newPin, new User(newFirstName, newLastName));
         bank.update(activeAccount);
         bank.save();
