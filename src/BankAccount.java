@@ -108,7 +108,7 @@ public class BankAccount {
     public String toString() {
         return String.valueOf(accountNo) +
             String.valueOf(pin) +
-            //accountHolder.serialize() +
+            accountHolder.serialize() +
             formatBalance();
     }
 }

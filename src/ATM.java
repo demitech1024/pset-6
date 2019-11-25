@@ -19,6 +19,9 @@ public class ATM {
     public static final int INVALID_DEST = 3;
     public static final int RECURSIVE_TRANSFER = 4;
     public static final int SUCCESS = 9;
+
+    public static final int FIRST_NAME_WIDTH = 20;
+    public static final int LAST_NAME_WIDTH = 30;
     
     ///////////////////// ///////////////////////////////////////////////////////
     //                                                                        //
