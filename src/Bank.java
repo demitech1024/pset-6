@@ -115,13 +115,6 @@ public class Bank {
         
         accounts.set(index, account);
     }
-
-
-    // public int generate(long accNo) {
-    //     for (BankAccount account : accounts) {
-
-    //     }
-    // }
     
     /**
      * Saves the state of any modified accounts.
