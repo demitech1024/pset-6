@@ -37,13 +37,46 @@ public class BankAccount {
         return accountHolder;
     }
 
-    public void deposit(double amount) {
-        balance = balance + amount;
+    public int deposit(double amount) {
+        if (amount <= 0) {
+            return ATM.INVALID;
+        } else {
+            balance = balance + amount;
+        }
+
+        return ATM.SUCCESS;
     }
 
-    public void withdraw(double amount) {
-        balance = balance - amount;
+    public int withdraw(double amount) {
+        if (amount <= 0) {
+            return ATM.INVALID;
+        } else if (amount > balance) {
+            return ATM.INSUFFICIENT;
+        } else {
+            balance = balance - amount;
+        }
+        
+        return ATM.SUCCESS;
     }
+
+    public int transfer(double amount, BankAccount destAcc) {
+        if (destAcc == null) {
+            return ATM.INVALID_DEST;
+        } else if (destAcc.accountNo == accountNo) {
+            return ATM.RECURSIVE_TRANSFER;
+        } else if (amount <= 0) {
+            return ATM.INVALID;
+        } else if (amount > balance) {
+            return ATM.INSUFFICIENT;
+        } else if (amount + destAcc.balance > Bank.MAX_BALANCE) {
+            return ATM.OVERFLOW;
+        } else {
+            balance = balance - amount;
+            destAcc.balance = destAcc.balance + amount;
+        }
+        return ATM.SUCCESS;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     //                                                                        //
     // Refer to the Simple ATM tutorial to fill in the details of this class. //
@@ -57,7 +90,7 @@ public class BankAccount {
      */
     
     private String formatBalance() {
-        return String.format("%1$15s", balance);
+        return String.format("%.2f", balance);
     }
     
     /*

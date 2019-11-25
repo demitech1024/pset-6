@@ -10,7 +10,15 @@ public class ATM {
     public static final int VIEW = 1;
     public static final int DEPOSIT = 2;
     public static final int WITHDRAW = 3;
-    public static final int LOGOUT = 4;
+    public static final int TRANSFER = 4;
+    public static final int LOGOUT = 5;
+
+    public static final int INVALID = 0;
+    public static final int INSUFFICIENT = 1;
+    public static final int OVERFLOW = 2;
+    public static final int INVALID_DEST = 3;
+    public static final int RECURSIVE_TRANSFER = 4;
+    public static final int SUCCESS = 9;
     
     ///////////////////// ///////////////////////////////////////////////////////
     //                                                                        //
@@ -40,16 +48,16 @@ public class ATM {
             System.out.print("\nAccount No.: ");
             String temp = in.next();
             if (temp.equals("+")) {
-                newUser();
+                newAccount();
                 System.out.printf("\nThank you. Your account number is %d.\nPlease log in to access your newly created account.\n", activeAccount.getAccountNo());
             } else {
                 long accountNo = Long.valueOf(temp);
             
                 System.out.print("PIN        : ");
                 int pin = in.nextInt();
-                
+                activeAccount = bank.login(accountNo, pin);
                 if (isValidLogin(accountNo, pin)) {
-                    activeAccount = Bank.login(accountNo, pin);
+                    //activeAccount = Bank.login(accountNo, pin);
                     System.out.println("\nHello again, " + activeAccount.getAccountHolder().getFirstName() + "!\n");
                     boolean validLogin = true;
                     while (validLogin) {
@@ -57,7 +65,8 @@ public class ATM {
                             case VIEW: showBalance(); break;
                             case DEPOSIT: deposit(); break;
                             case WITHDRAW: withdraw(); break;
-                            case LOGOUT: validLogin = false; break;
+                            case TRANSFER: transfer(); break;
+                            case LOGOUT: validLogin = false; bank.update(activeAccount); bank.save(); break;
                             default: // invalid selection
                                 System.out.println("\nInvalid selection.\n");
                                 break;
@@ -67,7 +76,7 @@ public class ATM {
                     if (accountNo == -1 && pin == -1) {
                         shutdown();
                     } else {
-                        System.out.println("\nInvalid account number and/or PIN.\n");
+                        System.out.println("\nInvalid account number and/or PIN.");
                     }
                 }
             }
@@ -75,51 +84,116 @@ public class ATM {
         }
     }
 
-    public void newUser() {
+    public void newAccount() {
         System.out.print("\nFirst name: ");
-        String newFirstName = in.next();
+        String newFirstName = in.next().strip();
         System.out.print("Last name: ");
-        String newLastName = in.next();
+        String newLastName = in.next().strip();
         System.out.print("PIN: ");
         int newPin = in.nextInt();
-        activeAccount = new BankAccount(newPin, new User(newFirstName, newLastName));
+        activeAccount = bank.createAccount(newPin, new User(newFirstName, newLastName));
+        bank.update(activeAccount);
+        bank.save();
     }
 
     public boolean isValidLogin(long accountNo, int pin) {
-        return accountNo == activeAccount.getAccountNo() && pin == activeAccount.getPin();
+        try {
+            return accountNo == activeAccount.getAccountNo() && pin == activeAccount.getPin();
+        } catch (Exception e) {
+            return false;
+        }
+        
     }
 
     public int getSelection() {
         System.out.println("[1] View balance");
         System.out.println("[2] Deposit money");
         System.out.println("[3] Withdraw money");
-        System.out.println("[4] Logout");
-
-        return in.nextInt();
+        System.out.println("[4] Transfer money");
+        System.out.println("[5] Logout");
+    
+        String selection = in.next();
+        int selectionInt = 9;
+        try {
+            selectionInt = Integer.valueOf(selection);
+        } catch (Exception e) {}
+        return selectionInt;
     }
 
     public void showBalance() {
         System.out.println("\nCurrent balance: " + activeAccount.getBalance() + "\n");
+        bank.update(activeAccount); 
+        bank.save();
     }
 
     public void deposit() {
         System.out.print("\nEnter amount: ");
-        try {
-            double depositAmt = in.nextDouble();
+        double depositAmt = in.nextDouble();
 
-            activeAccount.deposit(depositAmt);
-        } catch (Error e) {
-            
-        }
-        System.out.println();
+        int status = activeAccount.deposit(depositAmt);
+        System.out.println(statusMessage(status, "Deposit"));
+
+        bank.update(activeAccount); 
+        bank.save();
     }
 
     public void withdraw() {
         System.out.print("\nEnter amount: ");
         double withdrawAmt = in.nextDouble();
 
-        activeAccount.withdraw(withdrawAmt);
-        System.out.println();
+        int status = activeAccount.withdraw(withdrawAmt);
+        System.out.println(statusMessage(status, "Withdrawal"));
+
+        bank.update(activeAccount); 
+        bank.save();
+        
+    }
+
+    public void transfer() {
+        System.out.print("\nEnter account: ");
+        long destAccNo = in.nextLong();
+        System.out.print("Enter amount: ");
+        double transferAmt = in.nextDouble();
+        
+        int status = activeAccount.transfer(transferAmt, bank.getAccount(destAccNo));
+        System.out.println(statusMessage(status, "Transfer"));
+
+        bank.update(activeAccount);
+        try {
+            bank.update(bank.getAccount(destAccNo));
+        } catch (Exception e) {}
+        bank.save();
+    }
+
+    public String statusMessage(int status, String type) {
+        String output = "\n" + type;
+
+        switch (status) {
+            case INVALID:
+                output += " rejected. Amount must be greater than $0.00.\n";
+                break;
+            case INVALID_DEST:
+                output += " rejected. Destination account not found.\n";
+                break;
+            case RECURSIVE_TRANSFER:
+                output += " rejected. Destination account matched origin.\n";
+                break;
+            case OVERFLOW:
+                if (type.equals("Transfer")){
+                    output += " rejected. Amount would cause destination balance to exceed $999,999,999,999.99.\n"; 
+                } else {
+                    output += " rejected. Amount would cause balance to exceed $999,999,999,999.99.\n";
+                }
+                break;
+            case INSUFFICIENT:
+                output += " rejected. Insufficient funds.\n";
+                break;
+            default:
+                output += " accepted.\n";
+                break;
+        }
+
+        return output;
     }
 
     public void shutdown() {

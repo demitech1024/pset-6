@@ -16,6 +16,8 @@ public class Bank {
 	 *line of text into individual account fields.
 	 */
     
+    public static final double MAX_BALANCE = 99999999999.99;
+    
     private final static int ACCT_START = 0;
     private final static int ACCT_END = 9;
     private final static int PIN_START = 9;
@@ -26,7 +28,7 @@ public class Bank {
     private final static int LAST_NAME_END = 63;
     private final static int BALANCE_START = 63;
     
-    private final static String DATA = "data/accounts.dat";		// data file path
+    private final static String DATA = "../data/accounts.dat";		// data file path
     
     private List<BankAccount> accounts;							// an in-memory list of BankAccount objects
     
@@ -52,11 +54,11 @@ public class Bank {
      * @return the newly created account
      */
     
-    // public BankAccount createAccount(int pin, User user) {
-    // 	accounts.add(new BankAccount(pin, generateAccountNo(), user));
+    public BankAccount createAccount(int pin, User user) {
+    	accounts.add(new BankAccount(pin, generateAccountNo(), 0, user));
     	
-    // 	return accounts.get(accounts.size() - 1);
-    // }
+    	return accounts.get(accounts.size() - 1);
+    }
     
     /**
      * Logs into an existing account.
@@ -69,7 +71,7 @@ public class Bank {
     public BankAccount login(long accountNo, int pin) {
         BankAccount bankAccount = getAccount(accountNo);
         
-        if (bankAccount.getPin() == pin) {
+        if (bankAccount != null && bankAccount.getPin() == pin) {
             return bankAccount;
         } else {
             return null;
@@ -115,14 +117,11 @@ public class Bank {
     }
 
 
-    public int whichAccIndex(long accNo) {
-        int total = 0;
-        for (BankAccount sublist : accounts) {
-            total++;
-        }
+    // public int generate(long accNo) {
+    //     for (BankAccount account : accounts) {
 
-        
-    }
+    //     }
+    // }
     
     /**
      * Saves the state of any modified accounts.
@@ -178,7 +177,7 @@ public class Bank {
      * @return the next account number
      */
     
-    private long generateAccountNo() {
+    public long generateAccountNo() {
         long accountNo = -1;
         
         for (BankAccount account : accounts) {
