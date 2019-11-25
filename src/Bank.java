@@ -16,7 +16,7 @@ public class Bank {
 	 *line of text into individual account fields.
 	 */
     
-    public static final double MAX_BALANCE = 99999999999.99;
+    public static final double MAX_BALANCE = 999999999999.99;
     
     private final static int ACCT_START = 0;
     private final static int ACCT_END = 9;
