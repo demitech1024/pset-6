@@ -33,6 +33,10 @@ public class BankAccount {
         return currency.format(balance);
     }
 
+    public double getUnformattedBalance() {
+        return balance;
+    }
+
     public User getAccountHolder() {
         return accountHolder;
     }

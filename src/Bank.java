@@ -103,9 +103,10 @@ public class Bank {
     
     public void update(BankAccount account) {
         int index = -1;
-        
+        System.out.println(accounts);
         for (int i = 0; i < accounts.size(); i++) {
             BankAccount storedAccount = accounts.get(i);
+            System.out.println(storedAccount);
             
             if (storedAccount.getAccountNo() == account.getAccountNo()) {
                 index = i;
@@ -113,6 +114,8 @@ public class Bank {
             }
         }
         
+        System.out.println(account);
+        System.out.println(String.valueOf(account.getAccountNo()) + String.valueOf(account.getPin()) + String.valueOf(account.getAccountHolder()) + String.valueOf(account.getUnformattedBalance()));
         accounts.set(index, account);
     }
     
@@ -124,6 +127,7 @@ public class Bank {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(DATA))) {
             for (BankAccount account : accounts) {
                 bw.write(account.toString());
+                System.out.println(account.toString());
                 bw.newLine();
             }
             
